@@ -1,0 +1,50 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+ext {
+    smackVersion = '4.1.5'
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:support-v13:23.1.1'
+    compile 'de.hdodenhof:circleimageview:1.2.2'
+    compile 'com.melnykov:floatingactionbutton:1.2.0'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'com.google.zxing:android-integration:3.1.0'
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
+    compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
+    compile "org.igniterealtime.smack:smack-experimental:$smackVersion"
+    compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
+    compile project(':emojicon')
+    compile project(':otr4j')
+}
+
