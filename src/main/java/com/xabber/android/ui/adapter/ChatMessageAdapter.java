@@ -469,6 +469,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.chat_messagesRecyclerView.setVisibility(View.VISIBLE);
             message.messageBalloon.getBackground().setLevel(9);
         } else if (payload.getTemplate_type().equals("button")) {
+            message.messageBalloon.getBackground().setLevel(2);
             message.messageBalloon.setVisibility(View.VISIBLE);
             message.messageText.setText(payload.getText());
             message.messageText.setVisibility(View.VISIBLE);
