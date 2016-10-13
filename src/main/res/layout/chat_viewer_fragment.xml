@@ -71,7 +71,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/ic_mood_black_24dp"
-            android:tint="@color/white"
+            android:tint="@color/orange_500"
             />
 
         <github.ankushsachdeva.emojicon.EmojiconEditText
@@ -98,6 +98,16 @@
             android:background="?android:selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/ic_attach_file_black_24dp"
+            android:tint="@color/orange_100"
+            android:layout_gravity="bottom"
+            />
+        <ImageButton
+            android:id="@+id/button_postback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
+            android:src="@drawable/ic_list_white_24dp"
             android:tint="@color/orange_100"
             android:layout_gravity="bottom"
             />

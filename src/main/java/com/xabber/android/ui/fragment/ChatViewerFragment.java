@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.VoiceInteractor;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -106,6 +107,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private String user;
     private ImageButton sendButton;
     private ImageButton securityButton;
+    private ImageButton defaultPostBackButton;
+
     private Toolbar toolbar;
 
     private ChatViewerFragmentListener listener;
@@ -182,6 +185,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
+        defaultPostBackButton = (ImageButton) view.findViewById(R.id.button_postback);
 
         if (abstractChat instanceof RegularChat) {
             securityButton.setOnClickListener(new View.OnClickListener() {
@@ -194,6 +198,13 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             securityButton.setVisibility(View.GONE);
         }
 
+        defaultPostBackButton.setVisibility(View.VISIBLE);
+        defaultPostBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MessageManager.getInstance().onPostBack("DEVELOPER_DEFINED_DEFAULT_PAYLOAD_CHAT="+user, user);
+            }
+        });
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this, this);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
