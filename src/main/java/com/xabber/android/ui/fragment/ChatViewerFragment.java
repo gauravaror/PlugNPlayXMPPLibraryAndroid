@@ -58,6 +58,8 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.entity.QuickRepliesJSONParsed;
+import com.xabber.android.data.message.recyclerview.QuickRepliesAdapter;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -81,6 +83,7 @@ import org.jivesoftware.smack.packet.Message;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,6 +107,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
+    private QuickRepliesAdapter quickRepliesAdapter;
     private boolean skipOnTextChanges = false;
     private String account;
     private String user;
@@ -116,6 +120,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
     private RecyclerView recyclerView;
+    private RecyclerView recyclerView_quickReplies;
     private View contactTitleView;
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
@@ -227,9 +232,15 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
         recyclerView.setAdapter(chatMessageAdapter);
 
+        quickRepliesAdapter = new QuickRepliesAdapter(getActivity(), account, user, this);
+
+        recyclerView_quickReplies = (RecyclerView) view.findViewById(R.id.quick_replies_recycler_view);
+        recyclerView_quickReplies.setAdapter(quickRepliesAdapter);
+
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView_quickReplies.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         // to avoid strange bug on some 4.x androids
         view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
@@ -421,6 +432,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE));
         startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -988,6 +1000,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onNoDownloadFilePermission() {
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+    }
+
+    @Override
+    public void addQuickReplies(ArrayList<QuickRepliesJSONParsed> repliesJSONParseds) {
+        quickRepliesAdapter.mItems = repliesJSONParseds;
+        quickRepliesAdapter.notifyDataSetChanged();
+        recyclerView_quickReplies.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void removeQuickReplies() {
+        recyclerView_quickReplies.setVisibility(View.GONE);
+        quickRepliesAdapter.mItems =  new ArrayList<QuickRepliesJSONParsed>();
+        quickRepliesAdapter.notifyDataSetChanged();
+
     }
 
     public interface ChatViewerFragmentListener {

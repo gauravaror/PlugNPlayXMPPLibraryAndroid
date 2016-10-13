@@ -16,9 +16,7 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -30,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -49,15 +46,15 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.entity.AttachmentJSONParsed;
 import com.xabber.android.data.message.entity.AttachmentPayloadJSONParsed;
-import com.xabber.android.data.message.template.ButtonTemplateAdapter;
-import com.xabber.android.data.message.template.GenericTemplateElementsAdapter;
+import com.xabber.android.data.message.entity.QuickRepliesJSONParsed;
+import com.xabber.android.data.message.recyclerview.ButtonTemplateAdapter;
+import com.xabber.android.data.message.recyclerview.GenericTemplateElementsAdapter;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.DividerItemDecoration;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.android.utils.PaddingItemDecoration;
 import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
@@ -67,8 +64,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import static android.graphics.Color.TRANSPARENT;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
@@ -97,6 +92,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface Listener {
         void onNoDownloadFilePermission();
+        void addQuickReplies(ArrayList<QuickRepliesJSONParsed> repliesJSONParseds);
+        void removeQuickReplies();
     }
 
     public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener, ChatMessageAdapter.Listener listener) {
@@ -142,6 +139,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
+        boolean lastEle =  false;
+        if (getItemCount()-1  == position) {
+            lastEle = true;
+        }
 
         MessageItem messageItem = getMessageItem(position);
 
@@ -166,7 +167,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
-                setUpIncomingMessage((IncomingMessage) holder, messageItem);
+                setUpIncomingMessage((IncomingMessage) holder, messageItem, lastEle);
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 setUpOutgoingMessage((Message) holder, messageItem);
@@ -188,7 +189,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-    private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
+    private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem, boolean lastElement) {
         setUpMessage(messageItem, incomingMessage);
 
         if (incomingMessage.chat_messagesRecyclerView.getVisibility() == View.GONE) {
@@ -208,6 +209,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
+        }
+        if (lastElement) {
+            if (messageItem.isJsonMessage() && messageItem.getMessageJSONParsed() != null && messageItem.getMessageJSONParsed().getQuick_replies() != null ) {
+                listener.addQuickReplies(messageItem.getMessageJSONParsed().getQuick_replies());
+            }
+
         }
 
     }
