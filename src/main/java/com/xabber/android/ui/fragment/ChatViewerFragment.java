@@ -77,6 +77,8 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
+import org.jivesoftware.smack.packet.Message;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -197,14 +199,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         } else {
             securityButton.setVisibility(View.GONE);
         }
-
-        defaultPostBackButton.setVisibility(View.VISIBLE);
-        defaultPostBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MessageManager.getInstance().onPostBack("DEVELOPER_DEFINED_DEFAULT_PAYLOAD_CHAT="+user, user);
-            }
-        });
+        if (abstractChat.getType() == Message.Type.groupchat) {
+            defaultPostBackButton.setVisibility(View.VISIBLE);
+            defaultPostBackButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MessageManager.getInstance().onPostBack("DEVELOPER_DEFINED_DEFAULT_PAYLOAD_CHAT=" + user, user);
+                }
+            });
+        } else {
+            defaultPostBackButton.setVisibility(View.GONE);
+        }
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this, this);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
@@ -618,6 +623,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void setUpOptionsMenu(Menu menu) {
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
 
         if (abstractChat instanceof RoomChat) {
             RoomState chatState = ((RoomChat) abstractChat).getState();
