@@ -179,24 +179,23 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         setUpMessage(messageItem, holder);
         setStatusIcon(messageItem, (OutgoingMessage) holder);
         setUpFileMessage(holder, messageItem);
+        if (holder.chat_messagesRecyclerView.getVisibility() == View.GONE) {
 
-        setUpMessageBalloonBackground(holder.messageBalloon,
-                context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
-        setUpMessageBallonRecycler(holder);
-    }
+            setUpMessageBalloonBackground(holder.messageBalloon,
+                    context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
 
-    private void setUpMessageBallonRecycler(Message message) {
-        if (message.messages_recycler_view_outside.getVisibility() == View.VISIBLE) {
-            message.messageBalloon.setVisibility(View.INVISIBLE);
         }
-
     }
+
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
 
-        setUpMessageBalloonBackground(incomingMessage.messageBalloon,
+        if (incomingMessage.chat_messagesRecyclerView.getVisibility() == View.GONE) {
+
+            setUpMessageBalloonBackground(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
+        }
 
         setUpAvatar(messageItem, incomingMessage);
         setUpFileMessage(incomingMessage, messageItem);
@@ -210,7 +209,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
-        setUpMessageBallonRecycler(incomingMessage);
+
     }
 
     private void setUpMessageBalloonBackground(View messageBalloon, ColorStateList darkColorStateList, int lightBackgroundId) {
@@ -402,7 +401,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setUpMessage(MessageItem messageItem, Message message) {
         message.chat_messagesRecyclerView.setVisibility(View.GONE);
-        message.messages_recycler_view_outside.setVisibility(View.GONE);
 
         if (isMUC) {
             message.messageHeader.setText(messageItem.getResource());
@@ -461,19 +459,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setUpTemplate(AttachmentPayloadJSONParsed payload, Message message) {
         if (payload.getTemplate_type().equals("generic")) {
-            message.messageBalloon.setVisibility(View.INVISIBLE);
+            message.messageBalloon.setVisibility(View.VISIBLE);
             GenericTemplateElementsAdapter genericTemplateElementsAdapter = new GenericTemplateElementsAdapter(context);
             genericTemplateElementsAdapter.mItems = payload.getElements();
             genericTemplateElementsAdapter.conferenceId = user;
-            message.messages_recycler_view_outside.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            message.messages_recycler_view_outside.setItemAnimator(new DefaultItemAnimator());
-            message.messages_recycler_view_outside.setAdapter(genericTemplateElementsAdapter);
-            message.messages_recycler_view_outside.setVisibility(View.VISIBLE);
+            message.chat_messagesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            message.chat_messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            message.chat_messagesRecyclerView.setAdapter(genericTemplateElementsAdapter);
+            message.chat_messagesRecyclerView.setVisibility(View.VISIBLE);
+            message.messageBalloon.getBackground().setLevel(9);
         } else if (payload.getTemplate_type().equals("button")) {
-            message.messageBalloon.setVisibility(View.INVISIBLE);
-            message.messages_recycler_view_outside.setVisibility(View.GONE);
-            message.messageUnencrypted.setText(payload.getText());
-            message.messageUnencrypted.setVisibility(View.VISIBLE);
+            message.messageBalloon.setVisibility(View.VISIBLE);
+            message.messageText.setText(payload.getText());
+            message.messageText.setVisibility(View.VISIBLE);
             ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(context);
             buttonTemplateAdapter.mItems = payload.getButtons();
             buttonTemplateAdapter.conferenceId = user;
@@ -582,8 +580,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView messageUnencrypted;
         public View messageBalloon;
         public RecyclerView chat_messagesRecyclerView;
-        public RecyclerView  messages_recycler_view_outside;
-
         MessageClickListener onClickListener;
 
         public ImageButton downloadButton;
@@ -608,7 +604,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
             messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
             chat_messagesRecyclerView = (RecyclerView) itemView.findViewById(R.id.messages_recycler_view);
-            messages_recycler_view_outside = (RecyclerView) itemView.findViewById(R.id.messages_recycler_view_outside);
             itemView.setOnClickListener(this);
         }
 
