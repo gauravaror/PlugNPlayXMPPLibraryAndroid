@@ -156,6 +156,18 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         user = args.getString(ARGUMENT_USER, null);
     }
 
+    public void updateBackground() {
+        if (SettingsManager.chatsShowBackground()) {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                recyclerView.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+            } else {
+                recyclerView.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
+        } else {
+            recyclerView.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);

@@ -354,6 +354,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         selectPage(chatViewerAdapter.getPageNumber(chat), smoothScroll);
     }
 
+
     private void selectRecentChatsPage() {
         selectPage(chatViewerAdapter.getPageNumber(null), false);
     }
