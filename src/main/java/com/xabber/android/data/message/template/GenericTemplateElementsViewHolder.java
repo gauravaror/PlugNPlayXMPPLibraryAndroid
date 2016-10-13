@@ -29,9 +29,10 @@ public class GenericTemplateElementsViewHolder extends RecyclerView.ViewHolder
     RecyclerView element_buttons;
     PayloadElementsJSONParsed element;
     Context mContext;
-    String confId;
+    String user;
+    String account;
 
-    public GenericTemplateElementsViewHolder(Context context, View mView, String conferenceId) {
+    public GenericTemplateElementsViewHolder(Context context, View mView, String account, String user) {
         super(mView);
         mContext = context;
         element_image = (ImageView) mView.findViewById(R.id.message_element_image_view);
@@ -41,7 +42,8 @@ public class GenericTemplateElementsViewHolder extends RecyclerView.ViewHolder
         element_image.setOnClickListener(this);
         element_title.setOnClickListener(this);
         element_subtitle.setOnClickListener(this);
-        confId = conferenceId;
+        this.user = user;
+        this.account = account;
     }
     @Override
     public void onClick(View view) {
@@ -70,9 +72,8 @@ public class GenericTemplateElementsViewHolder extends RecyclerView.ViewHolder
             element_image.setVisibility(View.GONE);
         }
         if (element.getButtons() != null) {
-            ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(mContext);
+            ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(mContext, account, user);
             buttonTemplateAdapter.mItems = element.getButtons();
-            buttonTemplateAdapter.conferenceId = confId;
             element_buttons.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

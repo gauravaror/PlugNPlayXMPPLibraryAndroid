@@ -21,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.OnPostBackListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.AccountItem;
@@ -253,6 +254,21 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
         sendMessage(text, chat);
     }
+
+    public void sendSystmeMessage(String account, String user, String text) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            chat = createChat(account, user);
+        }
+        sendSystemMessage(text, chat);
+    }
+
+    private void sendSystemMessage(String text, AbstractChat chat) {
+        MessageItem messageItem = chat.newMessage(text);
+        messageItem.setUserAdded(false);
+        chat.sendQueue(messageItem);
+    }
+
 
     private void sendMessage(String text, AbstractChat chat) {
         MessageItem messageItem = chat.newMessage(text);
@@ -792,16 +808,29 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param account
      * @param user
      */
-    public void onChatNewMessageSent(final String account, final String user) {
+    public void onChatNewMessageSent(final String account, final String user, final boolean user_added) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 for (OnChatNewMessageListerner onChatNewMessageListerner
                         : Application.getInstance().getUIListeners(OnChatNewMessageListerner.class)) {
-                    onChatNewMessageListerner.onChatNewMessage(account, user);
+                    onChatNewMessageListerner.onChatNewMessage(account, user, user_added);
                 }
             }
         });
+    }
+
+    public void onPostBack(final String payload, final String user) {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnPostBackListener onPostBackListener
+                        : Application.getInstance().getUIListeners(OnPostBackListener.class)) {
+                    onPostBackListener.onPostBack(payload, user);
+                }
+            }
+        });
+
     }
 
     private boolean isStatusTrackingEnabled(String account, String bareAddress) {

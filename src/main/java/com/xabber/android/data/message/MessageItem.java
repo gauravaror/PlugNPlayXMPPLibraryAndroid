@@ -106,6 +106,9 @@ public class MessageItem implements Comparable<MessageItem> {
     private  boolean jsonMessage;
 
 
+    private boolean userAdded =  true;
+
+
     public MessageJSONParsed getMessageJSONParsed() {
         if (messageJSONParsed == null) {
             Gson gson =  new Gson();
@@ -340,5 +343,13 @@ public class MessageItem implements Comparable<MessageItem> {
 
     public void setJsonMessage(boolean jsonMessage) {
         this.jsonMessage = jsonMessage;
+    }
+
+    public boolean isUserAdded() {
+        return userAdded;
+    }
+
+    public void setUserAdded(boolean userAdded) {
+        this.userAdded = userAdded;
     }
 }

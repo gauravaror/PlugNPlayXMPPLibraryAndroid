@@ -19,9 +19,12 @@ public class GenericTemplateElementsAdapter extends RecyclerView.Adapter<Generic
     private  Context mContext;
     // list of items served by this adapter
     public ArrayList<PayloadElementsJSONParsed> mItems = new ArrayList<PayloadElementsJSONParsed>();
-    public String conferenceId;
+    public String account;
+    public String user;
 
-    public  GenericTemplateElementsAdapter(Context con) {
+    public  GenericTemplateElementsAdapter(Context con, String account, String user) {
+        this.user = user;
+        this.account = account;
         mContext = con;
     }
 
@@ -29,7 +32,7 @@ public class GenericTemplateElementsAdapter extends RecyclerView.Adapter<Generic
     public GenericTemplateElementsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_viewer_message_element, parent, false);
-        return new GenericTemplateElementsViewHolder(mContext, view, conferenceId);
+        return new GenericTemplateElementsViewHolder(mContext, view, account, user);
     }
 
     @Override

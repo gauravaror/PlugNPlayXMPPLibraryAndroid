@@ -10,6 +10,6 @@ public interface OnChatNewMessageListerner extends BaseUIListener {
      * @param account
      * @param user
      */
-    void onChatNewMessage(String account, String user);
+    void onChatNewMessage(String account, String user, boolean user_added);
 
 }

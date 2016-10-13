@@ -460,9 +460,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void setUpTemplate(AttachmentPayloadJSONParsed payload, Message message) {
         if (payload.getTemplate_type().equals("generic")) {
             message.messageBalloon.setVisibility(View.VISIBLE);
-            GenericTemplateElementsAdapter genericTemplateElementsAdapter = new GenericTemplateElementsAdapter(context);
+            GenericTemplateElementsAdapter genericTemplateElementsAdapter = new GenericTemplateElementsAdapter(context, account, user);
             genericTemplateElementsAdapter.mItems = payload.getElements();
-            genericTemplateElementsAdapter.conferenceId = user;
             message.chat_messagesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             message.chat_messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
             message.chat_messagesRecyclerView.setAdapter(genericTemplateElementsAdapter);
@@ -473,9 +472,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.messageBalloon.setVisibility(View.VISIBLE);
             message.messageText.setText(payload.getText());
             message.messageText.setVisibility(View.VISIBLE);
-            ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(context);
+            ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(context, account, user);
             buttonTemplateAdapter.mItems = payload.getButtons();
-            buttonTemplateAdapter.conferenceId = user;
             message.chat_messagesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
             message.chat_messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 

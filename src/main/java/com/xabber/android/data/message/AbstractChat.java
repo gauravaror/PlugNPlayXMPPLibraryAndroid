@@ -645,7 +645,7 @@ public abstract class AbstractChat extends BaseEntity {
                     .getArchiveMode(messageItem.getChat().getAccount())
                     .saveLocally()) {
                 sentMessages.add(messageItem);
-                MessageManager.getInstance().onChatNewMessageSent(account, user);
+                MessageManager.getInstance().onChatNewMessageSent(account, user, messageItem.isUserAdded());
             }
             else
                 removeMessages.add(messageItem);

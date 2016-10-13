@@ -21,16 +21,21 @@ public class ButtonTemplateAdapter extends RecyclerView.Adapter<ButtonTemplateVi
     // list of items served by this adapter
     public ArrayList<PayloadButtonsJSONParsed> mItems = new ArrayList<PayloadButtonsJSONParsed>();
 
-    public String conferenceId;
-    public ButtonTemplateAdapter(Context con) {
+    public String account;
+    public String user;
+
+    public ButtonTemplateAdapter(Context con, String accoun, String use) {
         mContext = con;
+        account = accoun;
+        user =use;
+
     }
 
     @Override
     public ButtonTemplateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_viewer_message_button, parent, false);
-        return new ButtonTemplateViewHolder(mContext, view, conferenceId);
+        return new ButtonTemplateViewHolder(mContext, view, account, user);
     }
 
     @Override

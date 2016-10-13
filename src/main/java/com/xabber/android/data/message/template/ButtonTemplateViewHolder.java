@@ -13,6 +13,9 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnPostBackListener;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatNewMessageListerner;
 import com.xabber.android.data.message.entity.PayloadButtonsJSONParsed;
 import com.xabber.android.data.message.entity.PayloadElementsJSONParsed;
@@ -26,13 +29,15 @@ public class ButtonTemplateViewHolder extends RecyclerView.ViewHolder
     Button button;
     PayloadButtonsJSONParsed element;
     Context mContext;
-    String conferenceId;
+    String user;
+    String account;
 
-    public ButtonTemplateViewHolder(Context context, View mView,String cId) {
+    public ButtonTemplateViewHolder(Context context, View mView,String account, String user) {
         super(mView);
         mContext = context;
         button = (Button)mView.findViewById(R.id.message_element_single_button);
-        conferenceId = cId;
+        this.user = user;
+        this.account = account;
         button.setOnClickListener(this);
     }
     @Override
@@ -45,15 +50,9 @@ public class ButtonTemplateViewHolder extends RecyclerView.ViewHolder
                 mContext.startActivity(i);
             }
         } else if (element.getType().equals("postback")) {
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnPostBackListener onPostBackListener
-                            : Application.getInstance().getUIListeners(OnPostBackListener.class)) {
-                        onPostBackListener.onPostBack(element.getPayload(), conferenceId);
-                    }
-                }
-            });
+            MessageManager.getInstance().onPostBack(element.getPayload(), user);
+            MessageManager.getInstance().sendSystmeMessage(account, user, element.getTitle());
+
 
         }
 
