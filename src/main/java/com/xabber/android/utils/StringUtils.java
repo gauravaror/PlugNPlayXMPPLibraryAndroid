@@ -18,6 +18,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.webkit.MimeTypeMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -44,6 +48,35 @@ public class StringUtils {
     }
 
     private StringUtils() {
+    }
+
+    public static boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static JSONObject getJSONFromString(String json) {
+        try {
+            return new JSONObject(json);
+        } catch (JSONException ex) {
+
+        }
+        try {
+            return new JSONObject("{text: }" + json);
+        } catch (JSONException ex) {
+
+        }
+        return new JSONObject();
     }
 
     /**

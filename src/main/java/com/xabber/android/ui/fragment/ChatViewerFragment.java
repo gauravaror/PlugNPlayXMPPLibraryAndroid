@@ -518,7 +518,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (isInputEmpty) {
             sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
-            securityButton.setVisibility(View.VISIBLE);
+            securityButton.setVisibility(View.GONE);
             if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
                 attachButton.setVisibility(View.VISIBLE);
             } else {
@@ -646,6 +646,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         updateSecurityButton();
     }
 
+    public void hideToolbar() {
+        toolbar.setVisibility(View.GONE);
+        contactTitleView.setVisibility(View.GONE);
+    }
+
     private void scrollChat(int itemCountBeforeUpdate) {
         int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
         if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 1)) {
@@ -741,7 +746,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             /* conference specific options menu */
         } else if (i == R.id.action_join_conference) {
-            MUCManager.getInstance().joinRoom(account, user, true);
+            MUCManager.getInstance().joinRoom(account, user, true, "");
             return true;
         } else if (i == R.id.action_invite_to_chat) {
             startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user));

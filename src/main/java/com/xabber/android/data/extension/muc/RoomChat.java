@@ -25,6 +25,7 @@ import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.Affiliation;
@@ -86,13 +87,13 @@ public class RoomChat extends AbstractChat {
      */
     private MultiUserChat multiUserChat;
 
-    RoomChat(String account, String user, String nickname, String password) {
+    RoomChat(String account, String user, String nickname, String password, String subject) {
         super(account, user, false);
         this.nickname = nickname;
         this.password = password;
         requested = false;
         state = RoomState.unavailable;
-        subject = "";
+        this.subject = subject;
         multiUserChat = null;
         occupants = new HashMap<>();
         invites = new HashMap<>();
@@ -505,7 +506,7 @@ public class RoomChat extends AbstractChat {
     protected void onComplete() {
         super.onComplete();
         if (getState() == RoomState.waiting) {
-            MUCManager.getInstance().joinRoom(account, user, false);
+            MUCManager.getInstance().joinRoom(account, user, false, subject);
         }
     }
 

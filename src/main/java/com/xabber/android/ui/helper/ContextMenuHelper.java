@@ -109,7 +109,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         MUCManager.getInstance().joinRoom(account,
-                                user, true);
+                                user, true, "");
                         return true;
                     }
                 });

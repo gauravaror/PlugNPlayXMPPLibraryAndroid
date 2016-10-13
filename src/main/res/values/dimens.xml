@@ -28,5 +28,13 @@
 
     <dimen name="min_chat_image_size">48dp</dimen>
     <dimen name="max_chat_image_size">288dp</dimen>
+    <dimen name="paddingItemDecorationDefault">2dp</dimen>
+    <dimen name="paddingItemDecorationEdge">4dp</dimen>
+
+    <dimen name="paddingHItemDecorationDefault">7dp</dimen>
+    <dimen name="paddingHItemDecorationEdge">14dp</dimen>
+
+
+    <dimen name="divider_size">3dp</dimen>
 
 </resources>

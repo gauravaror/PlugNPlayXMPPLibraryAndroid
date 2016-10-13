@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadFactory;
  *
  * @author alexander.ivanov
  */
-public class Application extends MultiDexApplication {
+public class Application extends android.app.Application {
 
 
     private static Application instance;

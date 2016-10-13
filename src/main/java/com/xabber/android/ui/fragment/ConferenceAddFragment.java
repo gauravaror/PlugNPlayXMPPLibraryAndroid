@@ -111,7 +111,7 @@ public class ConferenceAddFragment extends Fragment {
         }
         String password = passwordView.getText().toString();
         final boolean join = true;
-        MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
+        MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join, "");
         startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, conferenceJid));
     }
 }

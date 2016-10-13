@@ -786,6 +786,24 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         });
     }
 
+    /**
+     * Notifies registered {@link OnChatChangedListener}.
+     *
+     * @param account
+     * @param user
+     */
+    public void onChatNewMessageSent(final String account, final String user) {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnChatNewMessageListerner onChatNewMessageListerner
+                        : Application.getInstance().getUIListeners(OnChatNewMessageListerner.class)) {
+                    onChatNewMessageListerner.onChatNewMessage(account, user);
+                }
+            }
+        });
+    }
+
     private boolean isStatusTrackingEnabled(String account, String bareAddress) {
         if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always) {
             return false;

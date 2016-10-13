@@ -16,9 +16,13 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.view.LayoutInflater;
@@ -26,9 +30,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
@@ -41,18 +47,28 @@ import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.entity.AttachmentJSONParsed;
+import com.xabber.android.data.message.entity.AttachmentPayloadJSONParsed;
+import com.xabber.android.data.message.template.ButtonTemplateAdapter;
+import com.xabber.android.data.message.template.GenericTemplateElementsAdapter;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.PermissionsRequester;
+import com.xabber.android.utils.DividerItemDecoration;
 import com.xabber.android.utils.Emoticons;
+import com.xabber.android.utils.PaddingItemDecoration;
 import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static android.graphics.Color.TRANSPARENT;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
@@ -166,6 +182,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         setUpMessageBalloonBackground(holder.messageBalloon,
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
+        setUpMessageBallonRecycler(holder);
+    }
+
+    private void setUpMessageBallonRecycler(Message message) {
+        if (message.messages_recycler_view_outside.getVisibility() == View.VISIBLE) {
+            message.messageBalloon.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
@@ -186,6 +210,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
+        setUpMessageBallonRecycler(incomingMessage);
     }
 
     private void setUpMessageBalloonBackground(View messageBalloon, ColorStateList darkColorStateList, int lightBackgroundId) {
@@ -376,6 +401,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void setUpMessage(MessageItem messageItem, Message message) {
+        message.chat_messagesRecyclerView.setVisibility(View.GONE);
+        message.messages_recycler_view_outside.setVisibility(View.GONE);
 
         if (isMUC) {
             message.messageHeader.setText(messageItem.getResource());
@@ -408,6 +435,58 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         message.messageTime.setText(time);
+        if (messageItem.isJsonMessage() && messageItem.getMessageJSONParsed() != null && messageItem.getMessageJSONParsed().getAttachment() != null) {
+            setUpAttachment(messageItem.getMessageJSONParsed().getAttachment(),message);
+        }
+    }
+
+    private void setUpAttachment(AttachmentJSONParsed attachment, Message message) {
+        switch (attachment.getType()) {
+            case "image":
+                try {
+                    Glide.with(context).load(new URI(attachment.getPayload().getUrl())).crossFade().into(message.messageImage);
+                    message.messageImage.setVisibility(View.VISIBLE);
+                    message.messageUnencrypted.setVisibility(View.GONE);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "template":
+                if (attachment.getPayload() != null) {
+                    setUpTemplate(attachment.getPayload(), message);
+                }
+                break;
+        }
+    }
+
+    private void setUpTemplate(AttachmentPayloadJSONParsed payload, Message message) {
+        if (payload.getTemplate_type().equals("generic")) {
+            message.messageBalloon.setVisibility(View.INVISIBLE);
+            GenericTemplateElementsAdapter genericTemplateElementsAdapter = new GenericTemplateElementsAdapter(context);
+            genericTemplateElementsAdapter.mItems = payload.getElements();
+            genericTemplateElementsAdapter.conferenceId = user;
+            message.messages_recycler_view_outside.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            message.messages_recycler_view_outside.setItemAnimator(new DefaultItemAnimator());
+            message.messages_recycler_view_outside.setAdapter(genericTemplateElementsAdapter);
+            message.messages_recycler_view_outside.setVisibility(View.VISIBLE);
+        } else if (payload.getTemplate_type().equals("button")) {
+            message.messageBalloon.setVisibility(View.INVISIBLE);
+            message.messages_recycler_view_outside.setVisibility(View.GONE);
+            message.messageUnencrypted.setText(payload.getText());
+            message.messageUnencrypted.setVisibility(View.VISIBLE);
+            ButtonTemplateAdapter buttonTemplateAdapter = new ButtonTemplateAdapter(context);
+            buttonTemplateAdapter.mItems = payload.getButtons();
+            buttonTemplateAdapter.conferenceId = user;
+            message.chat_messagesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+            message.chat_messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                message.chat_messagesRecyclerView.addItemDecoration(new DividerItemDecoration(context.getDrawable(R.drawable.recycler_divider)));
+            }
+            message.chat_messagesRecyclerView.setAdapter(buttonTemplateAdapter);
+            message.chat_messagesRecyclerView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private void setStatusIcon(MessageItem messageItem, OutgoingMessage message) {
@@ -502,6 +581,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView messageHeader;
         public TextView messageUnencrypted;
         public View messageBalloon;
+        public RecyclerView chat_messagesRecyclerView;
+        public RecyclerView  messages_recycler_view_outside;
 
         MessageClickListener onClickListener;
 
@@ -516,20 +597,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
             this.onClickListener = onClickListener;
-
-
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
             messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
-
             downloadButton = (ImageButton) itemView.findViewById(R.id.message_download_button);
             attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
             downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
             messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
-
+            chat_messagesRecyclerView = (RecyclerView) itemView.findViewById(R.id.messages_recycler_view);
+            messages_recycler_view_outside = (RecyclerView) itemView.findViewById(R.id.messages_recycler_view_outside);
             itemView.setOnClickListener(this);
         }
 

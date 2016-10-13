@@ -16,6 +16,15 @@ package com.xabber.android.data.message;
 
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.xabber.android.data.message.entity.MessageJSONParsed;
+import com.xabber.android.utils.StringUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Date;
@@ -93,6 +102,25 @@ public class MessageItem implements Comparable<MessageItem> {
      * Outgoing file message
      */
     private boolean isUploadFileMessage;
+
+    private  boolean jsonMessage;
+
+
+    public MessageJSONParsed getMessageJSONParsed() {
+        if (messageJSONParsed == null) {
+            Gson gson =  new Gson();
+            messageJSONParsed =  gson.fromJson(text, MessageJSONParsed.class);
+        }
+        return messageJSONParsed;
+    }
+
+    public void setMessageJSONParsed(MessageJSONParsed messageJSONParsed) {
+        this.messageJSONParsed = messageJSONParsed;
+    }
+
+    private MessageJSONParsed messageJSONParsed;
+
+
     private File file;
     private Long fileSize;
 
@@ -119,6 +147,11 @@ public class MessageItem implements Comparable<MessageItem> {
         this.id = null;
         this.packetID = null;
         this.isUploadFileMessage = false;
+        jsonMessage = StringUtils.isJSONValid(text);
+        if (jsonMessage) {
+            Gson gson = new Gson();
+            messageJSONParsed = gson.fromJson(text, MessageJSONParsed.class);
+        }
     }
 
     public AbstractChat getChat() {
@@ -145,13 +178,52 @@ public class MessageItem implements Comparable<MessageItem> {
         if (file != null) {
             return file.getName();
         } else {
+            if (isJsonMessage()) {
+                return getJSONDisplayText();
+            }
             return text;
         }
     }
 
+    public String getJSONDisplayText() {
+        if (messageJSONParsed != null) {
+            if (messageJSONParsed.getText() != null) {
+                return  messageJSONParsed.getText();
+            } else if (messageJSONParsed.getAttachment()!= null ) {
+                switch (messageJSONParsed.getAttachment().getType()) {
+                    case "image":
+                        return "Image";
+                    case "template":
+                        if (messageJSONParsed.getAttachment().getPayload()!= null) {
+                            if (messageJSONParsed.getAttachment().getPayload().getText() != null) {
+                                return messageJSONParsed.getAttachment().getPayload().getText();
+                            } else if (messageJSONParsed.getAttachment().getPayload().getElements() != null && messageJSONParsed.getAttachment().getPayload().getElements().size() > 0) {
+                                String title = messageJSONParsed.getAttachment().getPayload().getElements().get(0).getTitle();
+                               return title != null? title : "Message";
+                            }
+                        }
+                        return "Message";
+                    default:
+                            return "Message";
+                }
+            }
+        }
+        return "Message";
+    }
+
     public Spannable getSpannable() {
+        String doingText = text;
+        if (isJsonMessage()) {
+            MessageJSONParsed messageJSONParsed1 = getMessageJSONParsed();
+            if (messageJSONParsed.getText() != null) {
+                doingText = messageJSONParsed.getText();
+            } else {
+                doingText = "";
+            }
+
+        }
         if (spannable == null) {
-            spannable = new SpannableString(text);
+            spannable = new SpannableString(doingText);
         }
         return spannable;
     }
@@ -260,5 +332,13 @@ public class MessageItem implements Comparable<MessageItem> {
 
     public Long getFileSize() {
         return fileSize;
+    }
+
+    public boolean isJsonMessage() {
+        return jsonMessage;
+    }
+
+    public void setJsonMessage(boolean jsonMessage) {
+        this.jsonMessage = jsonMessage;
     }
 }

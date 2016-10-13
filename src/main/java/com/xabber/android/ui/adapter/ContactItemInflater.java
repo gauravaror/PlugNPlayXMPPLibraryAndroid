@@ -3,6 +3,7 @@ package com.xabber.android.ui.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +63,11 @@ public class ContactItemInflater {
                 onAvatarClick(contact);
             }
         });
-
-        viewHolder.name.setText(contact.getName());
+        if (!TextUtils.isEmpty(contact.getStatusText())) {
+            viewHolder.name.setText(contact.getStatusText());
+        } else {
+            viewHolder.name.setText(contact.getName());
+        }
 
         MessageManager messageManager = MessageManager.getInstance();
         if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {

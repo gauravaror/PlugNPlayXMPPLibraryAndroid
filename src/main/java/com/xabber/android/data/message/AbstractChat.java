@@ -425,7 +425,6 @@ public abstract class AbstractChat extends BaseEntity {
                 delayTimestamp, incoming, read, send, false, incoming,
                 unencrypted, offline);
         FileManager.processFileMessage(messageItem, true);
-
         messages.add(messageItem);
         updateSendQuery(messageItem);
         sort();
@@ -644,8 +643,10 @@ public abstract class AbstractChat extends BaseEntity {
             messageItem.markAsSent();
             if (AccountManager.getInstance()
                     .getArchiveMode(messageItem.getChat().getAccount())
-                    .saveLocally())
+                    .saveLocally()) {
                 sentMessages.add(messageItem);
+                MessageManager.getInstance().onChatNewMessageSent(account, user);
+            }
             else
                 removeMessages.add(messageItem);
         }

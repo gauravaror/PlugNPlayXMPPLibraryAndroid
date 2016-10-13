@@ -52,12 +52,15 @@ class RoomTable extends AbstractAccountTable {
          * Join on launch.
          */
         public static final String NEED_JOIN = "need_join";
-
+        /**
+         * Subject.
+         */
+        public static final String SUBJECT = "subject";
     }
 
     private static final String NAME = "rooms";
     private static final String[] PROJECTION = new String[]{ Fields._ID,
-            Fields.ACCOUNT, Fields.ROOM, Fields.NICKNAME, Fields.PASSWORD, Fields.NEED_JOIN };
+            Fields.ACCOUNT, Fields.ROOM, Fields.NICKNAME, Fields.PASSWORD, Fields.NEED_JOIN, Fields.SUBJECT };
 
     private final DatabaseManager databaseManager;
     private SQLiteStatement writeStatement;
@@ -86,7 +89,7 @@ class RoomTable extends AbstractAccountTable {
         sql = "CREATE TABLE " + NAME + " (" + Fields._ID
                 + " INTEGER PRIMARY KEY," + Fields.ACCOUNT + " TEXT,"
                 + Fields.ROOM + " TEXT," + Fields.NICKNAME + " TEXT,"
-                + Fields.PASSWORD + " TEXT," + Fields.NEED_JOIN + " INTEGER);";
+                + Fields.PASSWORD + " TEXT," + Fields.NEED_JOIN + " INTEGER,"+ Fields.SUBJECT + " TEXT);";
         DatabaseManager.execSQL(db, sql);
         sql = "CREATE UNIQUE INDEX " + NAME + "_list ON " + NAME + " ("
                 + Fields.ACCOUNT + ", " + Fields.ROOM + ");";
@@ -115,6 +118,14 @@ class RoomTable extends AbstractAccountTable {
                 sql = "CREATE UNIQUE INDEX rooms_list ON rooms (account, room);";
                 DatabaseManager.execSQL(db, sql);
                 break;
+            case 69:
+                DatabaseManager.dropTable(db, "rooms");
+                sql = "CREATE TABLE rooms (_id INTEGER PRIMARY KEY,"
+                        + "account TEXT," + "room TEXT," + "nickname TEXT,"
+                        + "password TEXT," + "need_join INTEGER," +"subject TEXT);";
+                DatabaseManager.execSQL(db, sql);
+                sql = "CREATE UNIQUE INDEX rooms_list ON rooms (account, room);";
+                DatabaseManager.execSQL(db, sql);
             default:
                 break;
         }
@@ -123,21 +134,22 @@ class RoomTable extends AbstractAccountTable {
     /**
      * Adds or updates room.
      */
-    void write(String account, String room, String nickname, String password, boolean join) {
+    void write(String account, String room, String nickname, String password, boolean join, String subject) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
                 writeStatement = db.compileStatement("INSERT OR REPLACE INTO " + NAME
                                 + " (" + Fields.ACCOUNT + ", " + Fields.ROOM
                                 + ", " + Fields.NICKNAME + ", "
-                                + Fields.PASSWORD + ", " + Fields.NEED_JOIN
-                                + ") VALUES (?, ?, ?, ?, ?);");
+                                + Fields.PASSWORD + ", " + Fields.NEED_JOIN + ", " + Fields.SUBJECT
+                                + ") VALUES (?, ?, ?, ?, ?, ?);");
             }
             writeStatement.bindString(1, account);
             writeStatement.bindString(2, room);
             writeStatement.bindString(3, nickname);
             writeStatement.bindString(4, password);
             writeStatement.bindLong(5, join ? 1 : 0);
+            writeStatement.bindString(6, subject);
             writeStatement.execute();
         }
     }
@@ -183,6 +195,10 @@ class RoomTable extends AbstractAccountTable {
 
     static boolean needJoin(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.NEED_JOIN)) != 0;
+    }
+
+    static String getSubject(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.SUBJECT));
     }
 
 }

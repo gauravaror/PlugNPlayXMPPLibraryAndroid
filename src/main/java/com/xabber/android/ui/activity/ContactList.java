@@ -344,7 +344,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                     }
                     break;
                 }
-
                 case ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE:
                     action = null;
                     showMucPrivateChatDialog();
