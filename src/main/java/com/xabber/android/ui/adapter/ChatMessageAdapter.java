@@ -142,6 +142,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         boolean lastEle =  false;
         if (getItemCount()-1  == position) {
             lastEle = true;
+            listener.removeQuickReplies();
         }
 
         MessageItem messageItem = getMessageItem(position);
@@ -473,6 +474,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.chat_messagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
             message.chat_messagesRecyclerView.setAdapter(genericTemplateElementsAdapter);
             message.chat_messagesRecyclerView.setVisibility(View.VISIBLE);
+            message.messageText.setVisibility(View.GONE);
             message.messageBalloon.getBackground().setLevel(9);
         } else if (payload.getTemplate_type().equals("button")) {
             message.messageBalloon.getBackground().setLevel(2);

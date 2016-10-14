@@ -53,21 +53,23 @@
         tools:listitem="@layout/chat_viewer_outgoing_message"
         />
 
-
     <LinearLayout
         android:id="@+id/input_layout_with_quick_replies"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@drawable/empty_drawable"
         android:elevation="8dp"
         android:orientation="vertical"
         >
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/quick_replies_recycler_view"
         android:visibility="gone"
         android:layout_width="match_parent"
+        android:background="@drawable/chat_background_repeat"
         android:layout_height="40dp"
-        tools:listitem="@layout/chat_viewer_message_button"
+        tools:listitem="@layout/chat_quick_reply"
         />
     <LinearLayout
         android:id="@+id/input_layout"
