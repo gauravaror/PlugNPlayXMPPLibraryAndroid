@@ -20,21 +20,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +41,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -63,24 +57,16 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
-import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
-import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
-import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
-import com.xabber.android.ui.dialog.TranslationDialog;
-import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
-import com.xabber.android.ui.preferences.AccountList;
-import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
 /**
  * Main application activity.
@@ -196,9 +182,10 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PackageManager pm = getApplicationContext().getPackageManager();
-                Intent intent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
-                getApplicationContext().startActivity(intent);
+                //PackageManager pm = getApplicationContext().getPackageManager();
+                //Intent intent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
+                //getApplicationContext().startActivity(intent);
+                finish();
                 //NavUtils.navigateUpFromSameTask(getParent());
             }
         });
