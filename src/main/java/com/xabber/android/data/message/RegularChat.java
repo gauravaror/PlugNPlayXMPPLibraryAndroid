@@ -28,8 +28,6 @@ import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.MUC;
 
-import net.java.otr4j.OtrException;
-
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -96,7 +94,7 @@ public class RegularChat extends AbstractChat {
         try {
             return OTRManager.getInstance().transformSending(account, user,
                     text);
-        } catch (OtrException e) {
+        } catch (Exception e) {
             LogManager.exception(this, e);
             return null;
         }
@@ -151,7 +149,7 @@ public class RegularChat extends AbstractChat {
             boolean unencrypted = false;
             try {
                 text = OTRManager.getInstance().transformReceiving(account, user, text);
-            } catch (OtrException e) {
+            } catch (Exception e) {
                 if (e.getCause() instanceof OTRUnencryptedException) {
                     text = ((OTRUnencryptedException) e.getCause()).getText();
                     unencrypted = true;

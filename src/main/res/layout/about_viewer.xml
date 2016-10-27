@@ -246,7 +246,7 @@
                     android:id="@+id/about_redsolution"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/redsolution_logo" />
+                   />
 
                 <Space
                     android:layout_width="16dp"

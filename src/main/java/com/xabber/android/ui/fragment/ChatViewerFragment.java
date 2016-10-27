@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.VoiceInteractor;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;

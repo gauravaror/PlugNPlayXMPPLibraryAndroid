@@ -23,6 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    defaultPublishConfig "plainRelease"
+    productFlavors {
+        plain {}
+        otr {}
+    }
 }
 ext {
     smackVersion = '4.1.5'
@@ -47,6 +52,6 @@ dependencies {
     compile "org.igniterealtime.smack:smack-experimental:$smackVersion"
     compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
     compile project(':emojicon')
-    compile project(':otr4j')
+    otrCompile project(':otr4j')
 }
 
