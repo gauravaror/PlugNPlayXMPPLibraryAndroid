@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,10 +47,12 @@ public class GenericTemplateElementsViewHolder extends RecyclerView.ViewHolder
     }
     @Override
     public void onClick(View view) {
-       Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(element.getItem_url()));
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(i);
+        if (!TextUtils.isEmpty(element.getImage_url())) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(element.getItem_url()));
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(i);
+        }
 
     }
 
