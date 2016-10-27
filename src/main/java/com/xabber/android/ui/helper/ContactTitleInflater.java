@@ -15,6 +15,7 @@
 package com.xabber.android.ui.helper;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +37,9 @@ public class ContactTitleInflater {
 
         nameView.setText(abstractContact.getName());
 
+        if (!TextUtils.isEmpty(abstractContact.getStatusText())) {
+            nameView.setText(abstractContact.getStatusText());
+        }
         // if it is account, not simple user contact
         if (Jid.getBareAddress(abstractContact.getUser()).equals(Jid.getBareAddress(abstractContact.getAccount()))) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
@@ -68,10 +72,7 @@ public class ContactTitleInflater {
         } else if (chatState == ChatState.paused) {
             statusText = context.getString(R.string.chat_state_paused);
         } else {
-            statusText = abstractContact.getStatusText().trim();
-            if (statusText.toString().isEmpty()) {
-                statusText = context.getString(abstractContact.getStatusMode().getStringID());
-            }
+            statusText = context.getString(abstractContact.getStatusMode().getStringID());
         }
         statusTextView.setText(statusText);
     }
