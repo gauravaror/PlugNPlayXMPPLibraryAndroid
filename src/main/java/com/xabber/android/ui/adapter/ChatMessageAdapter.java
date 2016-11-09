@@ -193,7 +193,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem, boolean lastElement) {
         setUpMessage(messageItem, incomingMessage);
 
-        if (incomingMessage.chat_messagesRecyclerView.getVisibility() == View.GONE) {
+        if (incomingMessage.chat_messagesRecyclerView.getVisibility() == View.GONE || ( messageItem.isJsonMessage() && messageItem.getMessageJSONParsed().getAttachment() != null && !messageItem.getMessageJSONParsed().getAttachment().getPayload().getTemplate_type().equalsIgnoreCase("generic"))) {
 
             setUpMessageBalloonBackground(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
