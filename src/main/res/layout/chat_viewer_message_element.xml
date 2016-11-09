@@ -15,12 +15,13 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:iosched="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
+        android:layout_marginTop="@dimen/contact_list_item_padding_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/message_element_image_view"
         android:layout_width="200dp"
-        android:maxHeight="350dp"
+        android:maxHeight="250dp"
         android:scaleType="fitCenter"
         android:src="@drawable/drawer_image"
         android:layout_height="wrap_content"
@@ -30,6 +31,12 @@
         android:id="@+id/message_element_title"
         android:layout_width="match_parent"
         android:maxWidth="200dp"
+        android:layout_marginLeft="8dip"
+
+
+        android:layout_marginRight="@dimen/active_chat_padding_left"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="@dimen/abc_text_size_subhead_material"
         android:maxLines="3"
         android:layout_height="wrap_content"
         android:visibility="visible"/>
@@ -37,7 +44,11 @@
         android:layout_below="@id/message_element_title"
         android:id="@+id/message_element_subtitle"
         android:maxWidth="200dp"
+        android:textSize="@dimen/abc_text_size_small_material"
+        android:layout_marginLeft="8dip"
+        android:layout_marginRight="@dimen/active_chat_padding_left"
         android:maxLines="3"
+        android:textColor="?android:attr/textColorSecondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible"/>
