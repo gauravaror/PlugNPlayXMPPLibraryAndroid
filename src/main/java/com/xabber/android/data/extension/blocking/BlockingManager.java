@@ -282,7 +282,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             public void run() {
                 try {
                     discoverSupport(connection.getConnectionThread().getXMPPConnection());
-                    requestBlockList(connection.getConnectionThread().getXMPPConnection().getUser());
+ //                   requestBlockList(connection.getConnectionThread().getXMPPConnection().getUser());
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
                     e.printStackTrace();
                 }
